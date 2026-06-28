@@ -3,760 +3,354 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analisis Komparatif: Volatility 3 vs Autopsy</title>
+    <title>Analisis Komparatif: Volatility 3 vs Autopsy dalam Ranah DFIR</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 1000px;
+            font-family: 'Times New Roman', Times, serif;
+            line-height: 1.8;
+            color: #111111;
+            max-width: 900px;
             margin: 0 auto;
-            padding: 20px;
-            background-color: #f9f9f9;
+            padding: 40px 20px;
+            background-color: #ffffff;
         }
+        
+        /* Corporate Sharp & Industrial UI Reset */
+        * {
+            border-radius: 0px !important;
+        }
+
+        .header-journal {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 20px;
+        }
+
         h1 {
-            color: #2c3e50;
-            border-bottom: 3px solid #3498db;
-            padding-bottom: 10px;
-            font-size: 28px;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #1a252f;
+            font-size: 26px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 10px;
         }
+
+        .authors {
+            font-size: 14px;
+            color: #333333;
+            margin-bottom: 5px;
+            font-style: italic;
+        }
+
+        .affiliation {
+            font-size: 12px;
+            color: #555555;
+            margin-bottom: 20px;
+        }
+
+        .abstract-container {
+            border: 1px solid #2c3e50;
+            padding: 20px;
+            margin-bottom: 40px;
+            background-color: #f8f9fa;
+        }
+
+        .abstract-title {
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .abstract-text {
+            font-size: 13px;
+            text-align: justify;
+            margin-bottom: 15px;
+        }
+
+        .keywords {
+            font-size: 13px;
+            font-weight: bold;
+        }
+
         h2 {
-            color: #2980b9;
-            font-size: 22px;
-            margin-top: 25px;
-        }
-        h3 {
-            color: #16a085;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #2c3e50;
             font-size: 18px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+            margin-top: 35px;
+            text-transform: uppercase;
+        }
+
+        h3 {
+            font-family: Arial, Helvetica, sans-serif;
+            color: #34495e;
+            font-size: 15px;
             margin-top: 20px;
         }
-        h4 {
-            color: #27ae60;
-            font-size: 16px;
+
+        p {
+            text-align: justify;
+            margin-bottom: 15px;
+            text-indent: 30px;
         }
+
+        ul {
+            margin-bottom: 15px;
+            padding-left: 20px;
+        }
+
+        li {
+            text-align: justify;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
-            background: white;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin: 25px 0;
+            font-size: 13px;
         }
+
         th, td {
-            padding: 12px 15px;
+            padding: 10px 12px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
+            border: 1px solid #111111;
         }
+
         th {
-            background-color: #3498db;
+            background-color: #2c3e50;
             color: white;
-            font-weight: 600;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 12px;
         }
+
         tr:nth-child(even) {
-            background-color: #f2f2f2;
+            background-color: #f9f9f9;
         }
-        tr:hover {
-            background-color: #e3f2fd;
-        }
+
         pre {
-            background: #2d3436;
-            color: #f8f8f2;
+            background: #222222;
+            color: #ffffff;
             padding: 15px;
-            border-radius: 5px;
             overflow-x: auto;
             margin: 15px 0;
             font-family: 'Courier New', monospace;
-            font-size: 14px;
+            font-size: 12px;
+            border-left: 4px solid #2c3e50;
         }
+
         code {
-            background: #f0f0f0;
-            padding: 2px 5px;
-            border-radius: 3px;
+            background: #eef2f5;
+            padding: 2px 4px;
             font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #c0392b;
         }
-        .note {
-            background: #fff3cd;
+
+        .academic-note {
+            background: #fdfefe;
             padding: 15px;
-            border-left: 4px solid #ffc107;
+            border-left: 4px solid #7f8c8d;
             margin: 20px 0;
-            border-radius: 4px;
-        }
-        .warning {
-            background: #f8d7da;
-            padding: 15px;
-            border-left: 4px solid #dc3545;
-            margin: 20px 0;
-            border-radius: 4px;
-        }
-        .success {
-            background: #d4edda;
-            padding: 15px;
-            border-left: 4px solid #28a745;
-            margin: 20px 0;
-            border-radius: 4px;
-        }
-        .mermaid {
-            text-align: center;
-            margin: 20px 0;
-        }
-        blockquote {
-            border-left: 4px solid #3498db;
-            padding-left: 15px;
-            margin-left: 0;
-            color: #555;
             font-style: italic;
+            border-top: 1px solid #e5e7e9;
+            border-right: 1px solid #e5e7e9;
+            border-bottom: 1px solid #e5e7e9;
         }
-        .cheat-sheet {
-            background: #e8f4fc;
-            padding: 20px;
-            border-radius: 8px;
+
+        blockquote {
+            border-left: 3px solid #2c3e50;
+            padding-left: 15px;
             margin: 20px 0;
+            color: #444444;
+            font-style: italic;
         }
     </style>
 </head>
 <body>
 
-<h1>🔍 Analisis Komparatif: Volatility 3 (Live Memory) vs Autopsy (Static Disk) dalam Investigasi Artefak Volatile dan Enkripsi Canggih</h1>
-
-<div class="note">
-    <strong>📌 Ringkasan Eksekutif:</strong> Artikel ini menyajikan analisis komparatif mendalam antara <strong>Volatility 3</strong> (Live Memory Forensics) dan <strong>Autopsy</strong> (Static Disk Forensics) dalam konteks <strong>Digital Forensics and Incident Response (DFIR)</strong>. Fokus utama adalah pada ekstraksi artefak volatile (RAM) dan enkripsi state-of-the-art (BitLocker XTS-AES, Android FBE, LUKS2), serta bagaimana keduanya saling melengkapi dalam Hybrid Forensic Workflow.
+<div class="header-journal">
+    <h1>Analisis Komparatif Volatility 3 dan Autopsy dalam Rekonstruksi Artefak Volatile dan Dekripsi Penyimpanan Terenkripsi</h1>
+    <div class="authors">S2 Ilmu Komputer / Magister Teknologi Informasi</div>
+    <div class="affiliation">Bidang Minat Keamanan Informasi dan Digital Forensics</div>
 </div>
 
-<hr>
+<div class="abstract-container">
+    <div class="abstract-title">Abstract</div>
+    <div class="abstract-text">
+        The development of advanced encryption systems and volatile malware poses a critical challenge to digital forensics. This study presents a comparative analysis between Volatility 3 (live memory forensics) and Autopsy (static disk forensics) within the Digital Forensics and Incident Response (DFIR) framework. Based on RFC 3227 guidelines, this paper evaluates the capabilities of both tools in extracting highly volatile runtime state artifacts and high-level encryption keys, including BitLocker XTS-AES and LUKS2. The results indicate that while static forensics via Autopsy guarantees non-volatile data preservation, it remains restricted without pre-existing cryptographic keys. Conversely, Volatility 3 successfully breaches this limitation by extracting master cryptographic keys and identifying fileless code injections directly from volatile memory structures. Finally, this paper proposes a standardized Hybrid Forensic Workflow to optimize identification, acquisition, and preservation phases in accordance with ISO/IEC 27037.
+    </div>
+    <div class="keywords">Keywords: Digital Forensics, Volatility 3, Autopsy, Live Memory, Encryption Key Extraction, DFIR.</div>
+    
+    <hr style="border: 0; border-top: 1px solid #ccc; margin: 15px 0;">
 
-<h2>📚 1. Fondasi Teoretis: Hierarki Volatilitas & Keterbatasan Autopsy</h2>
+    <div class="abstract-title">Abstrak</div>
+    <div class="abstract-text">
+        Perkembangan sistem enkripsi tingkat lanjut dan malware volatile menimbulkan tantangan kritis dalam investigasi forensik digital. Penelitian ini menyajikan analisis komparatif antara Volatility 3 (live memory forensics) dan Autopsy (static disk forensics) dalam kerangka Digital Forensics and Incident Response (DFIR). Berdasarkan panduan hierarki volatilitas RFC 3227, makalah ini mengevaluasi kapabilitas kedua instrumen dalam mengekstrak artefak runtime state yang sangat volatile dan kunci enkripsi mutakhir, termasuk BitLocker XTS-AES dan LUKS2. Hasil analisis menunjukkan bahwa forensik statis melalui Autopsy menjamin preservasi data non-volatile namun memiliki keterbatasan mutlak tanpa adanya kunci kriptografi pradesain. Sebaliknya, Volatility 3 mampu menembus batasan tersebut dengan mengekstrak kunci master kriptografi serta mendeteksi fileless code injection langsung dari struktur memori volatile. Sebagai kontribusi praktis, makalah ini merumuskan Alur Kerja Forensik Hibrida (Hybrid Forensic Workflow) yang terstandarisasi guna mengoptimalkan fase identifikasi, akuisisi, dan preservasi sesuai ISO/IEC 27037.
+    </div>
+    <div class="keywords">Kata Kunci: Forensik Digital, Volatility 3, Autopsy, Memori Volatile, Ekstraksi Kunci Enkripsi, DFIR.</div>
+</div>
 
-<h3>1.1 Hierarki Volatilitas (RFC 3227)</h3>
-<p>Berdasarkan <strong>RFC 3227 (Guidelines for Evidence Collection and Archiving)</strong>, data dalam <strong>RAM</strong> menempati <strong>urutan tertinggi</strong> dalam Order of Volatility:</p>
-<ul>
-    <li><strong>Musnah seketika</strong> saat daya sistem diputus (<em>power loss</em>).</li>
-    <li><strong>Tidak persisten</strong> (tidak tersimpan di disk).</li>
-    <li><strong>Mengandung</strong> kunci enkripsi aktif, sesi jaringan, dan <em>runtime state</em> aplikasi.</li>
-</ul>
+<h2>I. Pendahuluan & Landasan Teoretis</h2>
+
+<h3>1.1 Hierarki Volatilitas Data Berdasarkan RFC 3227</h3>
+<p>Dalam investigasi insiden keamanan siber, pemahaman terhadap <em>Order of Volatility</em> merupakan parameter kritikal yang menentukan keberhasilan retensi bukti digital. Merujuk pada standardisasi <strong>RFC 3227</strong>, data di dalam memori utama (RAM) memiliki tingkat volatilitas tertinggi. Data tersebut bersifat efemeral dan akan musnah secara permanen saat komponen catu daya terputus (<em>power loss</em>). RAM menyimpan representasi metrik dari status eksekusi sistem secara real-time, termasuk kunci enkripsi aktif, deskriptor soket jaringan, dan <em>kernel-level artifacts</em> yang tidak pernah menyentuh media penyimpanan persisten (disk).</p>
 
 <table>
     <thead>
         <tr>
-            <th><strong>Tingkat Volatilitas</strong></th>
-            <th><strong>Jenis Data</strong></th>
-            <th><strong>Contoh Artefak</strong></th>
-            <th><strong>Tools yang Dibutuhkan</strong></th>
+            <th>Prioritas Volatilitas</th>
+            <th>Kategori Data</th>
+            <th>Komponen / Representasi Artefak</th>
+            <th>Instrumen Utama Analisis</th>
         </tr>
     </thead>
     <tbody>
         <tr>
-            <td><strong>Tertinggi (1)</strong></td>
-            <td><strong>RAM</strong></td>
-            <td>Kunci enkripsi, <em>process environment</em>, <em>network sockets</em></td>
-            <td><strong>Volatility 3</strong></td>
+            <td>Tingkat 1 (Tertinggi)</td>
+            <td>Volatile Memory</td>
+            <td>Kunci enkripsi simetris, register, cache, Process Environment Block (PEB)</td>
+            <td>Volatility 3, Rekonstruktor Kernel</td>
         </tr>
         <tr>
-            <td><strong>Tinggi (2)</strong></td>
-            <td><strong>Swap/Pagefile</strong></td>
-            <td>Data yang <em>paged out</em> dari RAM</td>
-            <td>Volatility 3 + Autopsy</td>
+            <td>Tingkat 2</td>
+            <td>Sub-Sistem Paging</td>
+            <td>Swap Space, Pagefile.sys (Ekspansi virtual memori)</td>
+            <td>Volatility 3 / Autopsy Parser</td>
         </tr>
         <tr>
-            <td><strong>Sedang (3)</strong></td>
-            <td><strong>Disk (Non-Volatile)</strong></td>
-            <td>File sistem, log, <em>prefetch</em>, <em>registry</em></td>
-            <td><strong>Autopsy</strong></td>
+            <td>Tingkat 3</td>
+            <td>Non-Volatile Storage</td>
+            <td>Struktur File Sistem, Windows Registry, Log Keamanan, Prefetch</td>
+            <td>Autopsy Forensic Browser</td>
         </tr>
         <tr>
-            <td><strong>Rendah (4)</strong></td>
-            <td><strong>Backup/Archive</strong></td>
-            <td><em>Shadow copies</em>, <em>Time Machine</em></td>
-            <td>Autopsy + FTK Imager</td>
+            <td>Tingkat 4 (Terendah)</td>
+            <td>Arsip Fisik Permanen</td>
+            <td>Media Cadangan (Backup), Volume Shadow Copies, Snapshot Storage</td>
+            <td>Autopsy, Sleuth Kit Engine</td>
         </tr>
     </tbody>
 </table>
 
-<h3>1.2 Keterbatasan Autopsy dalam Analisis Volatile</h3>
-<p>Autopsy bekerja dengan <strong>bit-stream imaging</strong> (E01, RAW/DD) dari <strong>non-volatile storage</strong> (HDD/SSD). Pendekatan ini <strong>tidak dapat</strong>:</p>
-<ul>
-    <li>❌ Membaca kunci simetris dari aplikasi <em>End-to-End Encryption</em> (E2EE) yang berjalan di <em>background</em>.</li>
-    <li>❌ Mendeteksi <em>Process Environment Block</em> (PEB) dari malware yang menyuntikkan kode ke memori proses legal (<em>process hollowing</em>).</li>
-    <li>❌ Merekonstruksi <em>runtime state</em> (koneksi jaringan aktif, <em>decryption keys</em> sementara).</li>
-</ul>
+<h3>1.2 Batasan Teknis Analisis Forensik Statis (Static Disk Forensics)</h3>
+<p>Pendekatan forensik tradisional menggunakan metode <em>bit-stream imaging</em> pada media penyimpanan non-volatile memiliki batasan metodologis yang signifikan. Instrumen seperti Autopsy bekerja dengan cara mengurai (<em>parsing</em>) struktur file sistem yang statis (seperti NTFS, ext4, atau APFS). Mekanisme ini tidak adaptif terhadap taktik penyerangan siber modern, seperti <em>fileless malware</em> yang mengeksploitasi teknik <em>process hollowing</em> atau <em>reflective DLL injection</em>. Selain itu, jika mekanisme pengamanan target memanfaatkan enkripsi penuh (<em>Full Disk Encryption</em> - FDE) tingkat lanjut seperti BitLocker dengan algoritma XTS-AES atau LUKS2, analisis offline pada Autopsy akan mengalami jalan buntu (<em>deadlock</em>) kecuali kunci pemulihan disediakan oleh otoritas terkait.</p>
 
-<div class="warning">
-    <strong>⚠️ Catatan Penting:</strong> Jika sistem menggunakan <strong>BitLocker</strong>, <strong>LUKS2</strong>, atau <strong>Android FBE</strong>, Autopsy <strong>hanya bisa menganalisis disk jika kunci pemulihan (<em>recovery key</em>) disediakan</strong>. Tanpa kunci, partisi terenkripsi akan terbaca sebagai <em>unallocated space</em> yang tidak dapat diindeks.
+<div class="academic-note">
+    <strong>Sintesis Teoretis:</strong> Kegagalan dalam mengamankan artefak volatile sebelum mematikan sistem (dead-state transition) dapat dikategorikan sebagai kelalaian prosedur preservasi bukti, karena memusnahkan peluang ekstraksi kunci kriptografi yang aktif pada memori runtime.
 </div>
 
-<hr>
-
-<h2>📊 2. Tabel Komparasi Fitur Teknis & Kapabilitas Ekstraksi</h2>
+<h2>II. Metodologi Komparasi Fitur Teknis</h2>
+<p>Evaluasi komparatif dilakukan secara objektif untuk memetakan kapabilitas operasional dari kedua instrumen forensik berdasarkan beberapa dimensi parameter pertimbangan teknis:</p>
 
 <table>
     <thead>
         <tr>
-            <th><strong>Dimensi Komparasi</strong></th>
-            <th><strong>Autopsy (Static Disk Forensics)</strong></th>
-            <th><strong>Volatility 3 (Live Memory Forensics)</strong></th>
+            <th>Kriteria Evaluasi</th>
+            <th>Autopsy Forensic Browser (Static Framework)</th>
+            <th>Volatility 3 Framework (Dynamic Memory Engine)</th>
         </tr>
     </thead>
     <tbody>
         <tr>
-            <td><strong>Kondisi Target Perangkat</strong></td>
-            <td>Offline / <em>Dead State</em> (Sistem dimatikan)</td>
-            <td>Online / <em>Live State</em> (RAM di-<em>capture</em> saat aktif)</td>
+            <td><strong>Keadaan Sistem Target</strong></td>
+            <td>Pasif / Offline (<em>Dead Forensics</em>)</td>
+            <td>Aktif / Online (<em>Live Forensics Context</em>)</td>
         </tr>
         <tr>
-            <td><strong>Metode Akuisisi Bukti</strong></td>
-            <td><em>Bit-stream imaging</em> (FTK Imager, Guymager, <code>dd</code>)</td>
-            <td><em>Memory dumping</em> (WinPmem, LiME, DumpIt)</td>
+            <td><strong>Mekanisme Ingesti Data</strong></td>
+            <td>E01, RAW/DD, VMDK (Sektor berbasis Disk Image)</td>
+            <td>Physical Memory Dump (RAW, LiME format, Core Dump)</td>
         </tr>
         <tr>
-            <td><strong>Penanganan Enkripsi Disk</strong></td>
-            <td>Memerlukan <em>recovery key</em> / password eksternal</td>
-            <td><strong>Dapat mengekstrak <em>master key</em> langsung dari RAM</strong></td>
+            <td><strong>Dekapsulasi Enkripsi</strong></td>
+            <td>Bergantung pada input kunci eksternal/Key Escrow</td>
+            <td>Mampu melakukan parsing struktur pool memori untuk mengekstrak master key</td>
         </tr>
         <tr>
-            <td><strong>Deteksi Fileless Malware</strong></td>
-            <td>Sangat terbatas (hanya artefak persisten di <em>Registry/Log</em>)</td>
-            <td><strong>Sangat efektif</strong> (<em>injected code</em> & <em>VAD structures</em>)</td>
+            <td><strong>Deteksi Fileless Threat</strong></td>
+            <td>Terbatas pada residu persistensi di Registry/MFT</td>
+            <td>Sangat komprehensif via analisis Virtual Address Descriptor (VAD)</td>
         </tr>
         <tr>
-            <td><strong>Analisis Artefak Jaringan</strong></td>
-            <td>Hanya <em>historical logs</em> (<em>Event Logs</em>, <em>Browser History</em>)</td>
-            <td><strong>Real-time</strong> (<em>TCP/UDP sockets</em> aktif, <em>PID</em> terkait)</td>
+            <td><strong>Ketergantungan Struktur</strong></td>
+            <td>Abstraksi File Sistem (MFT, Inode Table)</td>
+            <td>Symbolic Files (PDB metadata, Linux Banner Kernel Maps)</td>
         </tr>
         <tr>
-            <td><strong>Integritas Bukti (<em>Footprint</em>)</strong></td>
-            <td>Tinggi (0% modifikasi pada media target)</td>
-            <td>Ada <em>footprint</em> kecil di RAM saat proses <em>dumping</em></td>
-        </tr>
-        <tr>
-            <td><strong>Format Output Standar</strong></td>
-            <td>SQLite DB, Laporan HTML/PDF</td>
-            <td>Teks terstruktur (JSON, CSV, Plain Text via <em>plugin</em>)</td>
-        </tr>
-        <tr>
-            <td><strong>Ketergantungan Simbol Kernel</strong></td>
-            <td>Tidak ada</td>
-            <td><strong>Memerlukan <em>PDB files</em></strong> (untuk Windows) / <em>Debug Symbols</em> (Linux)</td>
-        </tr>
-        <tr>
-            <td><strong>Dukungan Sistem Operasi</strong></td>
-            <td>Windows, Linux, macOS (via <em>file system parsing</em>)</td>
-            <td><strong>Windows, Linux, macOS</strong> (tergantung <em>profile</em>)</td>
-        </tr>
-        <tr>
-            <td><strong>Kemampuan Analisis <em>Runtime</em></strong></td>
-            <td>❌ Tidak</td>
-            <td>✅ Ya (<em>process injection</em>, <em>memory artifacts</em>)</td>
+            <td><strong>Integritas Lingkungan</strong></td>
+            <td>Mutlak (0% modifikasi pada media storage)</td>
+            <td>Mengubah kondisi RAM sekian persen selama proses akuisisi</td>
         </tr>
     </tbody>
 </table>
 
-<hr>
+<h2>III. Deep-Dive Metodologi Ekstraksi Artefak Kritis</h2>
 
-<h2>🔧 3. Deep-Dive Metodologi Analisis Komparatif</h2>
+<h3>3.1 Ekstraksi Kunci Kriptografi FDE (Full Disk Encryption)</h3>
+<p>Pada saat sistem operasi terenkripsi berjalan, kunci enkripsi volume utama (seperti <em>Full Volume Encryption Key</em> - FVEK pada BitLocker) didekripsikan ke dalam volatile memory agar subsistem kernel dapat melakukan operasi I/O secara transparan. Autopsy tidak memiliki kapabilitas mengekstrak kunci ini dari disk image terenkripsi yang pasif.</p>
 
-<h3>3.1 Ekstraksi Kunci Enkripsi (<em>Decryption Keys</em>)</h3>
+<p>Melalui Volatility 3, investigator dapat mengekstrak teks sandi kriptografi dari dump memori fisik menggunakan subsistem pemrosesan simbolik Windows. Perintah eksekusi formal pada lingkungan Linux (Kali Linux Terminal) didefinisikan sebagai berikut:</p>
 
-<h4>🔹 Menggunakan Autopsy</h4>
-<ul>
-    <li><strong>Keterbatasan:</strong>
-        <ul>
-            <li>Jika partisi terenkripsi (misal: <strong>BitLocker</strong>), Autopsy <strong>memerlukan kunci pemulihan (<em>recovery key</em>)</strong> secara manual.</li>
-            <li>Tanpa kunci, partisi akan terbaca sebagai <em>unallocated space</em> terenkripsi.</li>
-        </ul>
-    </li>
-    <li><strong>Cara Kerja:</strong>
-        <pre># Contoh perintah di Autopsy (GUI-based)
-# 1. Buka image disk (E01/RAW)
-# 2. Pilih "Add Data Source" → "Disk Image"
-# 3. Jika terenkripsi, Autopsy akan meminta kunci</pre>
-    </li>
-</ul>
+<pre># Memetakan informasi kernel dan konfigurasi build sistem target
+python3 vol -f /path/to/evidence_mem.dump windows.info
 
-<h4>🔹 Menggunakan Volatility 3</h4>
-<ul>
-    <li><strong>Keunggulan:</strong>
-        <ul>
-            <li>Ketika sistem berjalan, <strong>kunci BitLocker (FVEK - Full Volume Encryption Key)</strong> didekripsi ke <strong>RAM</strong> untuk operasi I/O.</li>
-            <li>Volatility 3 dapat <strong>mengekstrak FVEK langsung dari <em>memory pool</em></strong>.</li>
-        </ul>
-    </li>
-    <li><strong>Cara Kerja (Kali Linux):</strong>
-        <pre># 1. Capture RAM menggunakan LiME (Linux) atau WinPmem (Windows)
-sudo lime -o lime_mem.dump
+# Mengekstrak materi kunci BitLocker (FVEK) dari struktur pool memori
+python3 vol -f /path/to/evidence_mem.dump windows.bitlocker.BitLocker</pre>
 
-# 2. Ekstrak FVEK dari memory dump (Windows)
-python3 vol -f lime_mem.dump windows.cachedump.Cache
-python3 vol -f lime_mem.dump windows.bitlocker.BitLocker</pre>
-    </li>
-</ul>
+<h3>3.2 Analisis Struktur Proses dan Deteksi Malicious Code Injection</h3>
+<p>Malware modern kerap menyuntikkan kode berbahaya ke dalam ruang alamat memori proses legal (misalnya <code>svchost.exe</code> atau <code>explorer.exe</code>). Autopsy tidak mampu mendeteksi anomali runtime ini karena tidak ada representasi file fisik pada disk. Volatility 3 melakukan pemindaian terhadap struktur internal kernel, mendeteksi halaman memori yang dikonfigurasi dengan proteksi <code>PAGE_EXECUTE_READWRITE</code> (W^X violation), serta mengurai pohon proses (<em>process tree</em>) menggunakan struktur data <code>_EPROCESS</code>.</p>
 
-<div class="note">
-    <strong>📌 Catatan:</strong>
-    <ul>
-        <li>Untuk <strong>BitLocker</strong>, gunakan plugin <code>windows.bitlocker</code>.</li>
-        <li>Untuk <strong>LUKS2</strong>, gunakan <code>linux.luks</code> (jika tersedia) atau analisis manual <em>dm-crypt keys</em> di RAM.</li>
-    </ul>
-</div>
+<pre># Mengidentifikasi ketidaksesuaian struktur VAD dan injeksi kode tak terdokumentasi
+python3 vol -f /path/to/evidence_mem.dump windows.malfind
 
-<h3>3.2 Analisis Proses dan Eksekusi Kode</h3>
+# Melakukan rekonstruksi hierarki proses untuk mendeteksi pemecahan proses (process spawning anomali)
+python3 vol -f /path/to/evidence_mem.dump windows.pstree</pre>
 
-<h4>🔹 Menggunakan Autopsy</h4>
-<ul>
-    <li><strong>Keterbatasan:</strong>
-        <ul>
-            <li>Hanya bergantung pada <strong>artefak persisten</strong> (misal: <em>Prefetch files</em> <code>.pf</code>, <em>Shimcache</em>, <em>UserAssist</em> di Registry).</li>
-            <li><strong>Tidak dapat mendeteksi</strong> <em>reflective DLL injection</em> atau <em>process hollowing</em> (karena tidak meninggalkan jejak di disk).</li>
-        </ul>
-    </li>
-</ul>
+<h3>3.3 Rekonstruksi Soket dan Sesi Jaringan Aktif</h3>
+<p>Guna mengidentifikasi indikator kompromi (IoC) berupa koneksi *Command and Control* (C2), analisis terhadap *network state* yang sedang berjalan sangat krusial. Volatility 3 mengurai objek driver jaringan (seperti <code>tcpip.sys</code>) untuk menampilkan koneksi aktif beserta PID yang bertanggung jawab.</p>
 
-<h4>🔹 Menggunakan Volatility 3</h4>
-<ul>
-    <li><strong>Keunggulan:</strong>
-        <ul>
-            <li>Menganalisis <strong>struktur data kernel</strong> (misal: <em>InLoadOrderModuleList</em>, <em>VAD - Virtual Address Descriptor</em>).</li>
-            <li>Dapat mendeteksi <strong>halaman memori dengan hak akses <code>PAGE_EXECUTE_READWRITE</code></strong> (ciri khas <em>malware injection</em>).</li>
-        </ul>
-    </li>
-    <li><strong>Cara Kerja (Kali Linux):</strong>
-        <pre># 1. Scan untuk mendeteksi malware di memori
-python3 vol -f lime_mem.dump windows.malfind
+<pre># Melakukan pemindaian terhadap endpoint koneksi TCP/UDP yang aktif saat dumping
+python3 vol -f /path/to/evidence_mem.dump windows.netscan</pre>
 
-# 2. Analisis proses yang mencurigakan
-python3 vol -f lime_mem.dump windows.pslist
-python3 vol -f lime_mem.dump windows.pstree
+<h2>IV. Perumusan Standar Hybrid Forensic Workflow</h2>
+<p>Berdasarkan kelemahan eksperimental dari masing-masing instrumen, akurasi investigasi digital forensik yang optimal hanya dapat dicapai melalui penggabungan kedua metode dalam sebuah <em>Hybrid Forensic Workflow</em> yang selaras dengan <strong>ISO/IEC 27037</strong>.</p>
 
-# 3. Ekstrak DLL yang disuntikkan
-python3 vol -f lime_mem.dump windows.dlllist --pid &lt;PID&gt;
-python3 vol -f lime_mem.dump windows.ldrmodules --pid &lt;PID&gt;
-
-# 4. Analisis VAD (Virtual Address Descriptor)
-python3 vol -f lime_mem.dump windows.vadinfo --pid &lt;PID&gt;</pre>
-    </li>
-</ul>
-
-<h3>3.3 Rekonstruksi Aktivitas Jaringan (<em>Network State</em>)</h3>
-
-<h4>🔹 Menggunakan Autopsy</h4>
-<ul>
-    <li><strong>Keterbatasan:</strong> Hanya dapat menganalisis <strong>log historis</strong> (misal: <em>Event Logs</em>, <em>Browser History</em>, <em>pcap</em> tersimpan).</li>
-</ul>
-
-<h4>🔹 Menggunakan Volatility 3</h4>
-<ul>
-    <li><strong>Keunggulan:</strong> Dapat <strong>memetakan <em>real-time network state</em></strong> (koneksi soket aktif, alamat IP eksternal, <em>PID</em> terkait).</li>
-    <li><strong>Cara Kerja (Kali Linux):</strong>
-        <pre># 1. Scan koneksi jaringan aktif
-python3 vol -f lime_mem.dump windows.netscan
-
-# 2. Analisis socket TCP/UDP
-python3 vol -f lime_mem.dump windows.netstat
-
-# 3. Ekstrak alamat IP dan port
-python3 vol -f lime_mem.dump windows.sockets</pre>
-    </li>
-</ul>
-
-<hr>
-
-<h2>⚖️ 4. Analisis Kelemahan Eksperimental (<em>The Forensic Trade-Off</em>)</h2>
-
-<table>
-    <thead>
-        <tr>
-            <th><strong>Kriteria</strong></th>
-            <th><strong>Autopsy</strong></th>
-            <th><strong>Volatility 3</strong></th>
-            <th><strong>Keterangan</strong></th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><strong>Risiko Kontaminasi Data</strong></td>
-            <td>❌ Tidak ada</td>
-            <td>✅ Ada (<em>footprint</em> saat <em>dumping</em>)</td>
-            <td><em>Prinsip Locard</em>: RAM capture memodifikasi <em>state</em> memori.</td>
-        </tr>
-        <tr>
-            <td><strong>Stabilitas Kernel</strong></td>
-            <td>✅ Stabil</td>
-            <td>⚠️ Bergantung pada <em>Symbol Files</em> (PDB)</td>
-            <td>Jika kernel <em>custom</em> (misal: Linux <em>hardened</em>), Volatility 3 mungkin gagal.</td>
-        </tr>
-        <tr>
-            <td><strong>Dukungan Enkripsi</strong></td>
-            <td>❌ Memerlukan kunci eksternal</td>
-            <td>✅ Dapat ekstraksi kunci dari RAM</td>
-            <td><strong>Hybrid Workflow</strong> disarankan.</td>
-        </tr>
-        <tr>
-            <td><strong>Deteksi <em>Fileless Malware</em></strong></td>
-            <td>❌ Terbatas</td>
-            <td>✅ Efektif</td>
-            <td>Volatility 3 unggul untuk <em>memory-resident malware</em>.</td>
-        </tr>
-        <tr>
-            <td><strong>Kemudahan Penggunaan</strong></td>
-            <td>✅ GUI (<em>user-friendly</em>)</td>
-            <td>⚠️ CLI (<em>command-line</em>)</td>
-            <td>Autopsy lebih mudah untuk pemula.</td>
-        </tr>
-    </tbody>
-</table>
-
-<div class="success">
-    <strong>💡 Kesimpulan:</strong> <strong>Tidak ada tools yang sempurna</strong> – keduanya <strong>saling melengkapi</strong>. Gunakan <strong>Volatility 3 untuk data volatile</strong>, lalu <strong>Autopsy untuk data persisten</strong>.
-</div>
-
-<hr>
-
-<h2>🛠️ 5. Panduan Praktis untuk Kali Linux</h2>
-
-<h3>5.1 Instalasi Tools</h3>
-
-<h4>🔹 Instalasi Autopsy</h4>
-<pre># 1. Tambahkan PPA Autopsy (jika diperlukan)
-sudo add-apt-repository ppa:sleuthkit/autopsy
-sudo apt update
-
-# 2. Instal Autopsy
-sudo apt install autopsy -y
-
-# 3. Jalankan Autopsy (via browser)
-autopsy
-# Buka http://localhost:9999 di browser</pre>
-
-<h4>🔹 Instalasi Volatility 3</h4>
-<pre># 1. Clone repository Volatility 3
-git clone https://github.com/volatilityfoundation/volatility3.git
-cd volatility3
-
-# 2. Buat virtual environment (disarankan)
-python3 -m venv venv
-source venv/bin/activate
-
-# 3. Instal dependencies
-pip install -r requirements.txt
-
-# 4. Verifikasi instalasi
-python3 vol --info</pre>
-
-<h4>🔹 Instalasi Tools Tambahan (Memory Dumping)</h4>
-<pre># 1. LiME (Linux Memory Extractor)
-git clone https://github.com/504ensicsLabs/LiME.git
-cd LiME/src
-make
-sudo cp lime.ko /lib/modules/$(uname -r)/kernel/
-
-# 2. WinPmem (untuk Windows, jalankan di target)
-# Download dari: https://github.com/Velocidex/caffeine
-# Contoh penggunaan:
-# .\WinPmem_mini_x64.exe -o memory.dump</pre>
-
-<h3>5.2 Workflow Hybrid Forensics (Kali Linux)</h3>
-
-<h4>📌 Langkah 1: Akuisisi Memory (<em>Live Forensics</em>)</h4>
-<pre># 1. Capture RAM menggunakan LiME (Linux)
-sudo lime -o /tmp/memory.dump
-
-# 2. Atau gunakan AVML (jika target Windows)
-# Download AVML: https://github.com/microsoft/avml
-# avml.exe -o memory.avml</pre>
-
-<h4>📌 Langkah 2: Analisis Memory dengan Volatility 3</h4>
-<pre># 1. Identifikasi profil sistem (Windows/Linux)
-python3 vol -f /tmp/memory.dump windows.info
-# Catat profil (misal: Win10x64_19041)
-
-# 2. Ekstrak kunci enkripsi (BitLocker)
-python3 vol -f /tmp/memory.dump --profile Win10x64_19041 windows.bitlocker.BitLocker
-
-# 3. Deteksi malware
-python3 vol -f /tmp/memory.dump --profile Win10x64_19041 windows.malfind
-
-# 4. Analisis jaringan
-python3 vol -f /tmp/memory.dump --profile Win10x64_19041 windows.netscan</pre>
-
-<h4>📌 Langkah 3: Akuisisi Disk (<em>Static Forensics</em>)</h4>
-<pre># 1. Buat image disk menggunakan dd (hati-hati: lambat untuk disk besar)
-sudo dd if=/dev/sdX of=/tmp/disk.img bs=4M status=progress
-
-# 2. Atau gunakan Guymager (GUI)
-sudo apt install guymager
-guymager</pre>
-
-<h4>📌 Langkah 4: Analisis Disk dengan Autopsy</h4>
-<pre># 1. Buka Autopsy di browser
-autopsy
-
-# 2. Tambahkan image disk (E01/RAW)
-# 3. Gunakan kunci enkripsi yang diekstrak dari RAM (jika diperlukan)
-# 4. Analisis artefak persisten (Registry, Logs, dll.)</pre>
-
-<h4>📌 Langkah 5: Integrasi Hasil</h4>
-<ul>
-    <li><strong>Gunakan kunci enkripsi</strong> dari Volatility 3 untuk <strong>membuka partisi terenkripsi</strong> di Autopsy.</li>
-    <li><strong>Bandinkan temuan</strong> dari kedua tools untuk <strong>rekonstruksi lengkap</strong> insiden.</li>
-</ul>
-
-<h3>5.3 Tips & Trik untuk Kali Linux</h3>
-<ul>
-    <li>✅ <strong>Gunakan <code>screen</code> atau <code>tmux</code></strong> untuk sesi <em>memory dumping</em> yang panjang:
-        <pre>screen -S forensics
-sudo lime -o /tmp/memory.dump
-# Tekan Ctrl+A, lalu D untuk detach</pre>
-    </li>
-    <li>✅ <strong>Simpan <em>symbol files</em> (PDB)</strong> untuk Windows:
-        <pre># Download PDB dari Microsoft Symbol Server
-# Contoh untuk Windows 10 19041:
-wget https://msdl.microsoft.com/download/symbols/Windows10_19041.pdb</pre>
-    </li>
-    <li>✅ <strong>Gunakan <code>volatility3</code> dengan <em>plugin</em> tambahan:</strong>
-        <pre># Clone plugin tambahan (misal: untuk Linux)
-git clone https://github.com/volatilityfoundation/volatility3-plugins.git</pre>
-    </li>
-    <li>✅ <strong>Analisis <em>timeline</em></strong> dengan <code>timesketch</code> (integrasi Autopsy):
-        <pre>sudo apt install timesketch</pre>
-    </li>
-</ul>
-
-<div class="mermaid">
-    <h3>📊 Alur Kerja Hybrid Forensics</h3>
-    <pre>Start → Live Memory Capture → Analisis Memory (Volatility 3) → Ekstrak Kunci & Artefak Volatile
-→ Matikan Sistem → Disk Imaging → Analisis Disk (Autopsy) → Integrasi Hasil → Laporan Forensik</pre>
-</div>
-
-<hr>
-
-<h2>🎯 6. Kesimpulan & Rekomendasi</h2>
-
-<h3>6.1 Tesis Utama</h3>
-<table>
-    <thead>
-        <tr>
-            <th><strong>Tools</strong></th>
-            <th><strong>Kelebihan</strong></th>
-            <th><strong>Kekurangan</strong></th>
-            <th><strong>Kapan Digunakan?</strong></th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><strong>Autopsy</strong></td>
-            <td>✅ Stabil, GUI, <em>user-friendly</em></td>
-            <td>❌ Tidak bisa analisis <em>volatile data</em></td>
-            <td><strong>Static Forensics</strong> (disk, file sistem, log)</td>
-        </tr>
-        <tr>
-            <td><strong>Volatility 3</strong></td>
-            <td>✅ Dapat analisis <em>RAM</em>, <em>runtime state</em>, <em>encryption keys</em></td>
-            <td>⚠️ Memerlukan <em>symbol files</em>, CLI</td>
-            <td><strong>Live Forensics</strong> (memori, <em>fileless malware</em>, <em>network state</em>)</td>
-        </tr>
-    </tbody>
-</table>
-
-<div class="success">
-    <strong>🔥 Rekomendasi:</strong> <strong>Gunakan keduanya dalam <em>Hybrid Workflow</em></strong>.
-    <ol>
-        <li><strong>Lakukan <em>Live Memory Forensics</em> terlebih dahulu</strong> (Volatility 3) untuk mengamankan:
-            <ul>
-                <li><em>Decryption keys</em> (BitLocker, LUKS2, FBE).</li>
-                <li><em>Network connections</em> aktif.</li>
-                <li><em>Fileless malware</em> di memori.</li>
-            </ul>
-        </li>
-        <li><strong>Matikan sistem secara aman</strong> (<em>orderly shutdown</em>).</li>
-        <li><strong>Lakukan <em>Disk Imaging</em></strong> (Autopsy) untuk analisis <em>persistent artifacts</em>.</li>
-    </ol>
-</div>
-
-<hr>
-
-<h2>📚 7. Referensi & Sumber Belajar</h2>
-
-<h3>7.1 Dokumentasi Resmi</h3>
-<ul>
-    <li><a href="https://volatility3.readthedocs.io/" target="_blank"><strong>Volatility 3 Documentation</strong></a></li>
-    <li><a href="https://www.sleuthkit.org/autopsy/docs/" target="_blank"><strong>Autopsy Documentation</strong></a></li>
-    <li><a href="https://tools.ietf.org/html/rfc3227" target="_blank"><strong>NIST RFC 3227</strong></a> (<em>Guidelines for Evidence Collection</em>)</li>
-</ul>
-
-<h3>7.2 Tools Tambahan untuk Kali Linux</h3>
-<table>
-    <thead>
-        <tr>
-            <th><strong>Tools</strong></th>
-            <th><strong>Kegunaan</strong></th>
-            <th><strong>Instalasi</strong></th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><strong>Guymager</strong></td>
-            <td>GUI untuk <em>disk imaging</em></td>
-            <td><code>sudo apt install guymager</code></td>
-        </tr>
-        <tr>
-            <td><strong>FTK Imager</strong></td>
-            <td><em>Forensic imaging</em> (Windows)</td>
-            <td>Download dari <a href="https://accessdata.com/products-services/forensic-toolkit-ftk" target="_blank">AccessData</a></td>
-        </tr>
-        <tr>
-            <td><strong>LiME</strong></td>
-            <td><em>Linux Memory Extractor</em></td>
-            <td><a href="https://github.com/504ensicsLabs/LiME" target="_blank">GitHub</a></td>
-        </tr>
-        <tr>
-            <td><strong>WinPmem</strong></td>
-            <td><em>Windows Memory Dumping</em></td>
-            <td><a href="https://github.com/Velocidex/caffeine" target="_blank">GitHub</a></td>
-        </tr>
-        <tr>
-            <td><strong>Timesketch</strong></td>
-            <td><em>Timeline analysis</em></td>
-            <td><code>sudo apt install timesketch</code></td>
-        </tr>
-        <tr>
-            <td><strong>RegRipper</strong></td>
-            <td><em>Registry analysis</em></td>
-            <td><code>sudo apt install regripper</code></td>
-        </tr>
-    </tbody>
-</table>
-
-<h3>7.3 Sumber Belajar DFIR</h3>
-<ul>
-    <li><strong>Buku:</strong>
-        <ul>
-            <li><em>The Art of Memory Forensics</em> (Michael Hale Ligh et al.)</li>
-            <li><em>File System Forensic Analysis</em> (Brian Carrier)</li>
-        </ul>
-    </li>
-    <li><strong>Kursus Online:</strong>
-        <ul>
-            <li><a href="https://www.sans.org/courses/windows-forensic-analysis/" target="_blank"><strong>SANS FOR500</strong></a> (Windows Forensics)</li>
-            <li><a href="https://www.sans.org/courses/reverse-engineering-malware/" target="_blank"><strong>SANS FOR610</strong></a> (Malware Analysis)</li>
-        </ul>
-    </li>
-    <li><strong>Komunitas:</strong>
-        <ul>
-            <li><a href="https://www.dfir.review/" target="_blank"><strong>DFIR Review</strong></a> (Ulasan tools DFIR)</li>
-            <li><a href="https://www.dfirdiva.com/" target="_blank"><strong>DFIR Diva</strong></a> (Panduan praktis)</li>
-        </ul>
-    </li>
-</ul>
-
-<hr>
-
-<h2>🔐 8. Catatan Hukum & Chain of Custody</h2>
-
-<h3>8.1 Prinsip Chain of Custody</h3>
-<ul>
-    <li><strong>Dokumentasikan setiap langkah</strong> (tanggal, waktu, tools, hash).</li>
-    <li><strong>Gunakan <em>hashing</em> (SHA-256)</strong> untuk memverifikasi integritas bukti:
-        <pre>sha256sum /tmp/memory.dump > memory_dump_hash.txt
-sha256sum /tmp/disk.img > disk_image_hash.txt</pre>
-    </li>
-    <li><strong>Simpan <em>log</em> semua perintah</strong> yang dieksekusi:
-        <pre>script forensics_log.txt
-# Jalankan semua perintah di sini
-exit</pre>
-    </li>
-</ul>
-
-<h3>8.2 Standar Hukum (Indonesia)</h3>
-<ul>
-    <li><strong>UU ITE No. 11 Tahun 2008</strong> (Pasal 5: <em>Bukti elektronik sah sebagai bukti hukum</em>).</li>
-    <li><strong>Peraturan Kapolri No. 10 Tahun 2019</strong> (Tata cara penanganan bukti elektronik).</li>
-    <li><strong>ISO/IEC 27037</strong> (Guidelines for identification, collection, acquisition, and preservation of digital evidence).</li>
-</ul>
-
-<div class="warning">
-    <strong>⚠️ Peringatan:</strong>
-    <ul>
-        <li><strong>Jangan modifikasi bukti asli</strong> (selalu kerja pada <em>copy</em>).</li>
-        <li><strong>Gunakan <em>write blocker</em></strong> saat melakukan <em>disk imaging</em> (misal: <code>dd</code> dengan <code>conv=noerror,sync</code>).</li>
-        <li><strong>Dapatkan izin hukum</strong> sebelum melakukan <em>forensic analysis</em> pada sistem yang bukan milik Anda.</li>
-    </ul>
-</div>
-
-<hr>
-
-<h2>📌 Ringkasan Cepat (<em>Cheat Sheet</em>)</h2>
-
-<div class="cheat-sheet">
-    <table>
-        <thead>
-            <tr>
-                <th><strong>Tugas</strong></th>
-                <th><strong>Tools</strong></th>
-                <th><strong>Perintah (Kali Linux)</strong></th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><strong>Memory Dump (Linux)</strong></td>
-                <td>LiME</td>
-                <td><code>sudo lime -o /tmp/memory.dump</code></td>
-            </tr>
-            <tr>
-                <td><strong>Memory Dump (Windows)</strong></td>
-                <td>WinPmem</td>
-                <td><code>.\WinPmem_mini_x64.exe -o memory.dump</code></td>
-            </tr>
-            <tr>
-                <td><strong>Analisis Memory</strong></td>
-                <td>Volatility 3</td>
-                <td><code>python3 vol -f memory.dump windows.pslist</code></td>
-            </tr>
-            <tr>
-                <td><strong>Ekstrak Kunci BitLocker</strong></td>
-                <td>Volatility 3</td>
-                <td><code>python3 vol -f memory.dump windows.bitlocker.BitLocker</code></td>
-            </tr>
-            <tr>
-                <td><strong>Disk Imaging</strong></td>
-                <td><code>dd</code></td>
-                <td><code>sudo dd if=/dev/sdX of=/tmp/disk.img bs=4M status=progress</code></td>
-            </tr>
-            <tr>
-                <td><strong>Analisis Disk</strong></td>
-                <td>Autopsy</td>
-                <td><code>autopsy</code> (buka di browser)</td>
-            </tr>
-            <tr>
-                <td><strong>Deteksi Malware di RAM</strong></td>
-                <td>Volatility 3</td>
-                <td><code>python3 vol -f memory.dump windows.malfind</code></td>
-            </tr>
-            <tr>
-                <td><strong>Analisis Jaringan</strong></td>
-                <td>Volatility 3</td>
-                <td><code>python3 vol -f memory.dump windows.netscan</code></td>
-            </tr>
-            <tr>
-                <td><strong>Hashing Bukti</strong></td>
-                <td><code>sha256sum</code></td>
-                <td><code>sha256sum memory.dump > hash.txt</code></td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-
-<hr>
-
-<h1>🎯 Kesimpulan Akhir</h1>
 <blockquote>
-    <p><strong>"Volatility 3 dan Autopsy bukan kompetitor, melainkan <em>complementary tools</em>. Gunakan <strong>Volatility 3 untuk data volatile</strong> dan <strong>Autopsy untuk data persisten</strong> dalam <em>Hybrid Forensic Workflow</em> untuk memastikan <strong>integritas bukti</strong> dan <strong>kelengkapan investigasi</strong>."</strong></p>
+    "Pendekatan sekuensial yang memprioritaskan akuisisi volatile data sebelum melakukan tindakan interupsi daya pada hardware merupakan prasyarat mutlak dalam menjaga validitas bukti digital secara komprehensif."
 </blockquote>
 
-<div class="note">
-    <strong>📝 Catatan Tambahan:</strong>
-    <ul>
-        <li>Artikel ini ditulis untuk <strong>Kali Linux 2026</strong> (dengan <em>Python 3.10+</em>).</li>
-        <li>Pastikan <strong><em>simbol kernel</em> (PDB)</strong> tersedia untuk analisis Volatility 3 yang akurat.</li>
-        <li>Untuk <strong>enkripsi modern</strong> (misal: <strong>BitLocker XTS-AES-256</strong>), ekstraksi kunci dari RAM <strong>sangat kritis</strong>.</li>
-    </ul>
-</div>
+<p>Alur kerja hibrida diimplementasikan melalui tahapan terstruktur berikut:</p>
+<ul>
+    <li><strong>Fase 1: Live Acquisition</strong> — Melakukan dumping memori menggunakan instrumen dengan footprint minimal (misal: LiME untuk Linux atau WinPmem untuk Windows) guna mengamankan RAM state.</li>
+    <li><strong>Fase 2: Volatile Analysis</strong> — Mengeksekusi Volatility 3 untuk memburu <em>cryptographic keys</em> (BitLocker/LUKS) dan mengidentifikasi keberadaan malware residensial memori.</li>
+    <li><strong>Fase 3: Safe Transition</strong> — Mematikan sistem secara teratur atau melakukan pencabutan daya (tergantung pada kebijakan deteksi anti-forensik) dilanjutkan dengan <em>write-blocked static disk imaging</em>.</li>
+    <li><strong>Fase 4: Persistent Analysis</strong> — Menginjeksikan kunci dekripsi yang diperoleh dari Fase 2 ke dalam Autopsy untuk membuka partisi FDE, dilanjutkan dengan pengindeksan linimasa (<em>timeline analysis</em>) dan ekstraksi artefak persisten.</li>
+</ul>
+
+<h2>V. Validasi Integritas & Rantai Jaga (Chain of Custody)</h2>
+<p>Sesuai dengan ketentuan regulasi hukum penanganan bukti elektronik di Indonesia, salah satunya <strong>UU ITE No. 11 Tahun 2008 Pasal 5</strong> serta panduan teknis **Perkapolri No. 10 Tahun 2019**, setiap tahapan transformasi digital wajib divalidasi menggunakan fungsi hash kriptografis guna menjamin aspek *data integrity*.</p>
+
+<pre># Eksekusi kalkulasi hash SHA-256 untuk pemeliharaan Rantai Jaga (Chain of Custody)
+sha256sum /storage/forensics/evidence_mem.dump > memory_integrity.sha256
+sha256sum /storage/forensics/evidence_disk.img > disk_integrity.sha256</pre>
+
+<h2>VI. Kesimpulan</h2>
+<p>Volatility 3 dan Autopsy tidak berada dalam paradigma kompetitif, melainkan merupakan dua instrumen komplementer dalam ekosistem *Digital Forensics and Incident Response* (DFIR). Analisis forensik statis melalui Autopsy memberikan ketahanan bukti empiris untuk data yang bersifat persisten, namun tidak berdaya dalam menghadapi FDE moderen dan eksploitasi fileless. Integrasi keduanya dalam *Hybrid Forensic Workflow* menjamin efisiensi analisis, akurasi temuan hambatan enkripsi, serta kepatuhan penuh terhadap standar regulasi penegakan hukum digital.</p>
+
+<hr style="border: 0; border-top: 2px solid #2c3e50; margin: 30px 0;">
+
+<h2>Referensi & Pustaka Akademik</h2>
+<ul>
+    <li>Carrier, B. (2005). <em>File System Forensic Analysis</em>. Addison-Wesley Professional.</li>
+    <li>Ligh, M. H., Case, A., Levy, J., & Walters, A. (2014). <em>The Art of Memory Forensics: Detecting Malware and Threats in Windows, Linux, and Mac Memory</em>. John Wiley & Sons.</li>
+    <li>International Organization for Standardization. (2012). <em>Information technology — Security techniques — Guidelines for identification, collection, acquisition, and preservation of digital evidence</em> (ISO/IEC Standard No. 27037:2012).</li>
+    <li>Internet Engineering Task Force. (2002). <em>Guidelines for Evidence Collection and Archiving</em> (RFC 3227).</li>
+</ul>
 
 </body>
 </html>
