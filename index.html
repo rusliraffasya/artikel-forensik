@@ -5,53 +5,174 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Analisis Komparatif: Volatility 3 vs Autopsy dalam Ranah DFIR</title>
     <style>
-        body {
-            font-family: 'Times New Roman', Times, serif;
-            line-height: 1.8;
-            color: #111111;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 40px 20px;
-            background-color: #ffffff;
-        }
-        
-        /* Corporate Sharp & Industrial UI Reset */
+        /* Modern & Academic Reset */
         * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
             border-radius: 0px !important;
+        }
+
+        :root {
+            --primary-color: #1a252f;
+            --secondary-color: #2c3e50;
+            --accent-color: #c0392b;
+            --bg-body: #f4f6f8;
+            --bg-paper: #ffffff;
+            --text-main: #2c3e50;
+            --text-muted: #555555;
+            --border-color: #dcdde1;
+        }
+
+        body {
+            font-family: 'Georgia', Cambria, 'Times New Roman', Times, serif;
+            line-height: 1.8;
+            color: var(--text-main);
+            background-color: var(--bg-body);
+            padding-top: 70px; /* Space for fixed header */
+        }
+
+        /* --- FIXED HEADER --- */
+        .fixed-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 65px;
+            background-color: var(--primary-color);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .fixed-header .journal-title {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 60%;
+        }
+
+        .btn-download-pdf {
+            background-color: var(--accent-color);
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-download-pdf:hover {
+            background-color: #a93226;
+        }
+
+        /* --- BOOK LAYOUT CONTAINER --- */
+        .book-container {
+            display: flex;
+            max-width: 1200px;
+            margin: 30px auto;
+            gap: 30px;
+            padding: 0 20px;
+        }
+
+        /* --- STICKY SIDEBAR (TABLE OF CONTENTS) --- */
+        .book-sidebar {
+            width: 280px;
+            position: sticky;
+            top: 100px;
+            height: calc(100vh - 140px);
+            background: var(--bg-paper);
+            border-left: 4px solid var(--secondary-color);
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .sidebar-title {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--secondary-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+        }
+
+        .book-toc-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .book-toc-list li {
+            margin-bottom: 10px;
+            font-size: 13px;
+            font-family: Arial, sans-serif;
+        }
+
+        .book-toc-list a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .book-toc-list a:hover {
+            color: var(--accent-color);
+            text-decoration: underline;
+        }
+
+        /* --- MAIN PAPER CONTENT --- */
+        .book-page {
+            flex: 1;
+            background-color: var(--bg-paper);
+            padding: 60px 50px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            min-width: 0; /* Prevents overflow in flex items */
         }
 
         .header-journal {
             text-align: center;
             margin-bottom: 40px;
-            border-bottom: 2px solid #2c3e50;
-            padding-bottom: 20px;
+            border-bottom: 3px double var(--secondary-color);
+            padding-bottom: 30px;
         }
 
         h1 {
             font-family: Arial, Helvetica, sans-serif;
-            color: #1a252f;
-            font-size: 26px;
-            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 28px;
+            font-weight: 800;
+            line-height: 1.4;
             text-transform: uppercase;
-            margin-bottom: 10px;
-        }
-
-        .authors {
-            font-size: 14px;
-            color: #333333;
-            margin-bottom: 5px;
-            font-style: italic;
+            margin-bottom: 15px;
         }
 
         .affiliation {
-            font-size: 12px;
-            color: #555555;
-            margin-bottom: 20px;
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .abstract-container {
-            border: 1px solid #2c3e50;
-            padding: 20px;
+            border: 1px solid var(--secondary-color);
+            padding: 25px;
             margin-bottom: 40px;
             background-color: #f8f9fa;
         }
@@ -61,239 +182,331 @@
             font-weight: bold;
             font-size: 14px;
             text-transform: uppercase;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+            letter-spacing: 0.5px;
         }
 
         .abstract-text {
-            font-size: 13px;
+            font-size: 14px;
             text-align: justify;
             margin-bottom: 15px;
+            color: #333333;
         }
 
         .keywords {
+            font-family: Arial, sans-serif;
             font-size: 13px;
-            font-weight: bold;
+            font-style: italic;
         }
 
         h2 {
             font-family: Arial, Helvetica, sans-serif;
-            color: #2c3e50;
-            font-size: 18px;
-            border-bottom: 1px solid #ccc;
+            color: var(--secondary-color);
+            font-size: 20px;
+            font-weight: bold;
+            border-bottom: 1px solid var(--secondary-color);
             padding-bottom: 5px;
-            margin-top: 35px;
+            margin-top: 45px;
+            margin-bottom: 20px;
             text-transform: uppercase;
         }
 
         h3 {
             font-family: Arial, Helvetica, sans-serif;
             color: #34495e;
-            font-size: 15px;
-            margin-top: 20px;
+            font-size: 16px;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            font-weight: bold;
         }
 
         p {
             text-align: justify;
-            margin-bottom: 15px;
-            text-indent: 30px;
+            margin-bottom: 20px;
+            text-indent: 40px;
+            font-size: 16px;
         }
 
         ul {
-            margin-bottom: 15px;
-            padding-left: 20px;
+            margin-bottom: 20px;
+            padding-left: 40px;
         }
 
         li {
             text-align: justify;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        /* --- TABLES --- */
+        .table-container {
+            overflow-x: auto;
+            margin: 30px 0;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 25px 0;
+            font-family: Arial, sans-serif;
             font-size: 13px;
         }
 
         th, td {
-            padding: 10px 12px;
+            padding: 12px 15px;
             text-align: left;
-            border: 1px solid #111111;
+            border: 1px solid #2c3e50;
         }
 
         th {
-            background-color: #2c3e50;
+            background-color: var(--secondary-color);
             color: white;
             font-weight: bold;
             text-transform: uppercase;
             font-size: 12px;
+            letter-spacing: 0.5px;
         }
 
         tr:nth-child(even) {
-            background-color: #f9f9f9;
+            background-color: #fcfcfc;
         }
 
+        /* --- CODE BLOCKS --- */
         pre {
-            background: #222222;
-            color: #ffffff;
-            padding: 15px;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 18px;
             overflow-x: auto;
-            margin: 15px 0;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            border-left: 4px solid #2c3e50;
+            margin: 20px 0;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 13px;
+            border-left: 4px solid var(--accent-color);
+            line-height: 1.5;
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.5);
         }
 
         code {
-            background: #eef2f5;
-            padding: 2px 4px;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-            color: #c0392b;
+            background: #f1f2f6;
+            padding: 3px 6px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 14px;
+            color: var(--accent-color);
+            font-weight: bold;
         }
 
+        /* --- CALLOUTS & QUOTES --- */
         .academic-note {
-            background: #fdfefe;
-            padding: 15px;
-            border-left: 4px solid #7f8c8d;
-            margin: 20px 0;
+            background: #f9f9f9;
+            padding: 20px;
+            border-left: 4px solid var(--secondary-color);
+            margin: 25px 0;
             font-style: italic;
-            border-top: 1px solid #e5e7e9;
-            border-right: 1px solid #e5e7e9;
-            border-bottom: 1px solid #e5e7e9;
+            border-top: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            font-size: 15px;
         }
 
         blockquote {
-            border-left: 3px solid #2c3e50;
-            padding-left: 15px;
-            margin: 20px 0;
-            color: #444444;
+            border-left: 4px solid var(--accent-color);
+            padding-left: 20px;
+            margin: 25px 0;
+            color: #4f5f6f;
             font-style: italic;
+            font-size: 16px;
+        }
+
+        /* --- PRINT / PDF OPTIMIZATION --- */
+        @media print {
+            body {
+                background-color: #fff;
+                padding-top: 0;
+            }
+            .fixed-header, .book-sidebar {
+                display: none !important; /* Hide UI elements on PDF */
+            }
+            .book-container {
+                margin: 0;
+                padding: 0;
+                max-width: 100%;
+            }
+            .book-page {
+                box-shadow: none;
+                padding: 0;
+                background: transparent;
+            }
+            h2 {
+                page-break-before: always; /* New chapter starts on new page */
+            }
+            p, li {
+                font-size: 12pt;
+            }
+            pre, table {
+                page-break-inside: avoid;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .book-sidebar {
+                display: none;
+            }
+            .book-page {
+                padding: 40px 25px;
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="header-journal">
-    <h1>Analisis Komparatif Volatility 3 dan Autopsy dalam Rekonstruksi Artefak Volatile dan Dekripsi Penyimpanan Terenkripsi</h1>
-    <div class="affiliation">Bidang Minat Keamanan Informasi dan Digital Forensics</div>
+<div class="fixed-header">
+    <div class="journal-title">Analisis Komparatif: Volatility 3 vs Autopsy</div>
+    <button class="btn-download-pdf" onclick="window.print()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Cetak / PDF
+    </button>
 </div>
 
-<div class="abstract-container">
-    <div class="abstract-title">Abstract</div>
-    <div class="abstract-text">
-        The development of advanced encryption systems and volatile malware poses a critical challenge to digital forensics. This study presents a comparative analysis between Volatility 3 (live memory forensics) and Autopsy (static disk forensics) within the Digital Forensics and Incident Response (DFIR) framework. Based on RFC 3227 guidelines, this paper evaluates the capabilities of both tools in extracting highly volatile runtime state artifacts and high-level encryption keys, including BitLocker XTS-AES and LUKS2. The results indicate that while static forensics via Autopsy guarantees non-volatile data preservation, it remains restricted without pre-existing cryptographic keys. Conversely, Volatility 3 successfully breaches this limitation by extracting master cryptographic keys and identifying fileless code injections directly from volatile memory structures. Finally, this paper proposes a standardized Hybrid Forensic Workflow to optimize identification, acquisition, and preservation phases in accordance with ISO/IEC 27037.
-    </div>
-    <div class="keywords">Keywords: Digital Forensics, Volatility 3, Autopsy, Live Memory, Encryption Key Extraction, DFIR.</div>
+<div class="book-container">
     
-    <hr style="border: 0; border-top: 1px solid #ccc; margin: 15px 0;">
+    <aside class="book-sidebar">
+        <div class="sidebar-title">Daftar Isi</div>
+        <ul class="book-toc-list">
+            <li><a href="#bab1">I. Pendahuluan & Landasan Teoretis</a></li>
+            <li><a href="#bab2">II. Metodologi Komparasi</a></li>
+            <li><a href="#bab3">III. Ekstraksi Artefak Kritis</a></li>
+            <li><a href="#bab4">IV. Hybrid Forensic Workflow</a></li>
+            <li><a href="#bab5">V. Validasi Integritas</a></li>
+            <li><a href="#bab6">VI. Kesimpulan & Referensi</a></li>
+        </ul>
+    </aside>
 
-    <div class="abstract-title">Abstrak</div>
-    <div class="abstract-text">
-        Perkembangan sistem enkripsi tingkat lanjut dan malware volatile menimbulkan tantangan kritis dalam investigasi forensik digital. Penelitian ini menyajikan analisis komparatif antara Volatility 3 (live memory forensics) dan Autopsy (static disk forensics) dalam kerangka Digital Forensics and Incident Response (DFIR). Berdasarkan panduan hierarki volatilitas RFC 3227, makalah ini mengevaluasi kapabilitas kedua instrumen dalam mengekstrak artefak runtime state yang sangat volatile dan kunci enkripsi mutakhir, termasuk BitLocker XTS-AES dan LUKS2. Hasil analisis menunjukkan bahwa forensik statis melalui Autopsy menjamin preservasi data non-volatile namun memiliki keterbatasan mutlak tanpa adanya kunci kriptografi pradesain. Sebaliknya, Volatility 3 mampu menembus batasan tersebut dengan mengekstrak kunci master kriptografi serta mendeteksi fileless code injection langsung dari struktur memori volatile. Sebagai kontribusi praktis, makalah ini merumuskan Alur Kerja Forensik Hibrida (Hybrid Forensic Workflow) yang terstandarisasi guna mengoptimalkan fase identifikasi, akuisisi, dan preservasi sesuai ISO/IEC 27037.
-    </div>
-    <div class="keywords">Kata Kunci: Forensik Digital, Volatility 3, Autopsy, Memori Volatile, Ekstraksi Kunci Enkripsi, DFIR.</div>
-</div>
+    <main class="book-page">
 
-<h2>I. Pendahuluan & Landasan Teoretis</h2>
+        <div class="header-journal">
+            <h1>Analisis Komparatif Volatility 3 dan Autopsy dalam Rekonstruksi Artefak Volatile dan Dekripsi Penyimpanan Terenkripsi</h1>
+            <div class="affiliation">Bidang Minat Keamanan Informasi dan Digital Forensics</div>
+        </div>
 
-<h3>1.1 Hierarki Volatilitas Data Berdasarkan RFC 3227</h3>
-<p>Dalam investigasi insiden keamanan siber, pemahaman terhadap <em>Order of Volatility</em> merupakan parameter kritikal yang menentukan keberhasilan retensi bukti digital. Merujuk pada standardisasi <strong>RFC 3227</strong>, data di dalam memori utama (RAM) memiliki tingkat volatilitas tertinggi. Data tersebut bersifat efemeral dan akan musnah secara permanen saat komponen catu daya terputus (<em>power loss</em>). RAM menyimpan representasi metrik dari status eksekusi sistem secara real-time, termasuk kunci enkripsi aktif, deskriptor soket jaringan, dan <em>kernel-level artifacts</em> yang tidak pernah menyentuh media penyimpanan persisten (disk).</p>
+        <div class="abstract-container">
+            <div class="abstract-title">Abstract</div>
+            <div class="abstract-text">
+                The development of advanced encryption systems and volatile malware poses a critical challenge to digital forensics. This study presents a comparative analysis between Volatility 3 (live memory forensics) and Autopsy (static disk forensics) within the Digital Forensics and Incident Response (DFIR) framework. Based on RFC 3227 guidelines, this paper evaluates the capabilities of both tools in extracting highly volatile runtime state artifacts and high-level encryption keys, including BitLocker XTS-AES and LUKS2. The results indicate that while static forensics via Autopsy guarantees non-volatile data preservation, it remains restricted without pre-existing cryptographic keys. Conversely, Volatility 3 successfully breaches this limitation by extracting master cryptographic keys and identifying fileless code injections directly from volatile memory structures. Finally, this paper proposes a standardized Hybrid Forensic Workflow to optimize identification, acquisition, and preservation phases in accordance with ISO/IEC 27037.
+            </div>
+            <div class="keywords"><strong>Keywords:</strong> Digital Forensics, Volatility 3, Autopsy, Live Memory, Encryption Key Extraction, DFIR.</div>
+            
+            <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 20px 0;">
 
-<table>
-    <thead>
-        <tr>
-            <th>Prioritas Volatilitas</th>
-            <th>Kategori Data</th>
-            <th>Komponen / Representasi Artefak</th>
-            <th>Instrumen Utama Analisis</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>Tingkat 1 (Tertinggi)</td>
-            <td>Volatile Memory</td>
-            <td>Kunci enkripsi simetris, register, cache, Process Environment Block (PEB)</td>
-            <td>Volatility 3, Rekonstruktor Kernel</td>
-        </tr>
-        <tr>
-            <td>Tingkat 2</td>
-            <td>Sub-Sistem Paging</td>
-            <td>Swap Space, Pagefile.sys (Ekspansi virtual memori)</td>
-            <td>Volatility 3 / Autopsy Parser</td>
-        </tr>
-        <tr>
-            <td>Tingkat 3</td>
-            <td>Non-Volatile Storage</td>
-            <td>Struktur File Sistem, Windows Registry, Log Keamanan, Prefetch</td>
-            <td>Autopsy Forensic Browser</td>
-        </tr>
-        <tr>
-            <td>Tingkat 4 (Terendah)</td>
-            <td>Arsip Fisik Permanen</td>
-            <td>Media Cadangan (Backup), Volume Shadow Copies, Snapshot Storage</td>
-            <td>Autopsy, Sleuth Kit Engine</td>
-        </tr>
-    </tbody>
-</table>
+            <div class="abstract-title">Abstrak</div>
+            <div class="abstract-text">
+                Perkembangan sistem enkripsi tingkat lanjut dan malware volatile menimbulkan tantangan kritis dalam investigasi forensik digital. Penelitian ini menyajikan analisis komparatif antara Volatility 3 (live memory forensics) dan Autopsy (static disk forensics) dalam kerangka Digital Forensics and Incident Response (DFIR). Berdasarkan panduan hierarki volatilitas RFC 3227, makalah ini mengevaluasi kapabilitas kedua instrumen dalam mengekstrak artefak runtime state yang sangat volatile dan kunci enkripsi mutakhir, termasuk BitLocker XTS-AES dan LUKS2. Hasil analisis menunjukkan bahwa forensik statis melalui Autopsy menjamin preservasi data non-volatile namun memiliki keterbatasan mutlak tanpa adanya kunci kriptografi pradesain. Sebaliknya, Volatility 3 mampu menembus batasan tersebut dengan mengekstrak kunci master kriptografi serta mendeteksi fileless code injection langsung dari struktur memori volatile. Sebagai kontribusi praktis, makalah ini merumuskan Alur Kerja Forensik Hibrida (Hybrid Forensic Workflow) yang terstandarisasi guna mengoptimalkan fase identifikasi, akuisisi, dan preservasi sesuai ISO/IEC 27037.
+            </div>
+            <div class="keywords"><strong>Kata Kunci:</strong> Forensik Digital, Volatility 3, Autopsy, Memori Volatile, Ekstraksi Kunci Enkripsi, DFIR.</div>
+        </div>
 
-<h3>1.2 Batasan Teknis Analisis Forensik Statis (Static Disk Forensics)</h3>
-<p>Pendekatan forensik tradisional menggunakan metode <em>bit-stream imaging</em> pada media penyimpanan non-volatile memiliki batasan metodologis yang signifikan. Instrumen seperti Autopsy bekerja dengan cara mengurai (<em>parsing</em>) struktur file sistem yang statis (seperti NTFS, ext4, atau APFS). Mekanisme ini tidak adaptif terhadap taktik penyerangan siber modern, seperti <em>fileless malware</em> yang mengeksploitasi teknik <em>process hollowing</em> atau <em>reflective DLL injection</em>. Selain itu, jika mekanisme pengamanan target memanfaatkan enkripsi penuh (<em>Full Disk Encryption</em> - FDE) tingkat lanjut seperti BitLocker dengan algoritma XTS-AES atau LUKS2, analisis offline pada Autopsy akan mengalami jalan buntu (<em>deadlock</em>) kecuali kunci pemulihan disediakan oleh otoritas terkait.</p>
+        <h2 id="bab1">I. Pendahuluan & Landasan Teoretis</h2>
 
-<div class="academic-note">
-    <strong>Sintesis Teoretis:</strong> Kegagalan dalam mengamankan artefak volatile sebelum mematikan sistem (dead-state transition) dapat dikategorikan sebagai kelalaian prosedur preservasi bukti, karena memusnahkan peluang ekstraksi kunci kriptografi yang aktif pada memori runtime.
-</div>
+        <h3>1.1 Hierarki Volatilitas Data Berdasarkan RFC 3227</h3>
+        <p>Dalam investigasi insiden keamanan siber, pemahaman terhadap <em>Order of Volatility</em> merupakan parameter kritikal yang menentukan keberhasilan retensi bukti digital. Merujuk pada standardisasi <strong>RFC 3227</strong>, data di dalam memori utama (RAM) memiliki tingkat volatilitas tertinggi. Data tersebut bersifat efemeral dan akan musnah secara permanen saat komponen catu daya terputus (<em>power loss</em>). RAM menyimpan representasi metrik dari status eksekusi sistem secara real-time, termasuk kunci enkripsi aktif, deskriptor soket jaringan, dan <em>kernel-level artifacts</em> yang tidak pernah menyentuh media penyimpanan persisten (disk).</p>
 
-<h2>II. Metodologi Komparasi Fitur Teknis</h2>
-<p>Evaluasi komparatif dilakukan secara objektif untuk memetakan kapabilitas operasional dari kedua instrumen forensik berdasarkan beberapa dimensi parameter pertimbangan teknis:</p>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Prioritas Volatilitas</th>
+                        <th>Kategori Data</th>
+                        <th>Komponen / Representasi Artefak</th>
+                        <th>Instrumen Utama Analisis</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Tingkat 1 (Tertinggi)</strong></td>
+                        <td>Volatile Memory</td>
+                        <td>Kunci enkripsi simetris, register, cache, Process Environment Block (PEB)</td>
+                        <td>Volatility 3, Rekonstruktor Kernel</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tingkat 2</strong></td>
+                        <td>Sub-Sistem Paging</td>
+                        <td>Swap Space, Pagefile.sys (Ekspansi virtual memori)</td>
+                        <td>Volatility 3 / Autopsy Parser</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tingkat 3</strong></td>
+                        <td>Non-Volatile Storage</td>
+                        <td>Struktur File Sistem, Windows Registry, Log Keamanan, Prefetch</td>
+                        <td>Autopsy Forensic Browser</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tingkat 4 (Terendah)</strong></td>
+                        <td>Arsip Fisik Permanen</td>
+                        <td>Media Cadangan (Backup), Volume Shadow Copies, Snapshot Storage</td>
+                        <td>Autopsy, Sleuth Kit Engine</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-<table>
-    <thead>
-        <tr>
-            <th>Kriteria Evaluasi</th>
-            <th>Autopsy Forensic Browser (Static Framework)</th>
-            <th>Volatility 3 Framework (Dynamic Memory Engine)</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><strong>Keadaan Sistem Target</strong></td>
-            <td>Pasif / Offline (<em>Dead Forensics</em>)</td>
-            <td>Aktif / Online (<em>Live Forensics Context</em>)</td>
-        </tr>
-        <tr>
-            <td><strong>Mekanisme Ingesti Data</strong></td>
-            <td>E01, RAW/DD, VMDK (Sektor berbasis Disk Image)</td>
-            <td>Physical Memory Dump (RAW, LiME format, Core Dump)</td>
-        </tr>
-        <tr>
-            <td><strong>Dekapsulasi Enkripsi</strong></td>
-            <td>Bergantung pada input kunci eksternal/Key Escrow</td>
-            <td>Mampu melakukan parsing struktur pool memori untuk mengekstrak master key</td>
-        </tr>
-        <tr>
-            <td><strong>Deteksi Fileless Threat</strong></td>
-            <td>Terbatas pada residu persistensi di Registry/MFT</td>
-            <td>Sangat komprehensif via analisis Virtual Address Descriptor (VAD)</td>
-        </tr>
-        <tr>
-            <td><strong>Ketergantungan Struktur</strong></td>
-            <td>Abstraksi File Sistem (MFT, Inode Table)</td>
-            <td>Symbolic Files (PDB metadata, Linux Banner Kernel Maps)</td>
-        </tr>
-        <tr>
-            <td><strong>Integritas Lingkungan</strong></td>
-            <td>Mutlak (0% modifikasi pada media storage)</td>
-            <td>Mengubah kondisi RAM sekian persen selama proses akuisisi</td>
-        </tr>
-    </tbody>
-</table>
+        <h3>1.2 Batasan Teknis Analisis Forensik Statis (Static Disk Forensics)</h3>
+        <p>Pendekatan forensik tradisional menggunakan metode <em>bit-stream imaging</em> pada media penyimpanan non-volatile memiliki batasan metodologis yang signifikan. Instrumen seperti Autopsy bekerja dengan cara mengurai (<em>parsing</em>) struktur file sistem yang statis (seperti NTFS, ext4, atau APFS). Mekanisme ini tidak adaptif terhadap taktik penyerangan siber modern, seperti <em>fileless malware</em> yang mengeksploitasi teknik <em>process hollowing</em> atau <em>reflective DLL injection</em>. Selain itu, jika mekanisme pengamanan target memanfaatkan enkripsi penuh (<em>Full Disk Encryption</em> - FDE) tingkat lanjut seperti BitLocker dengan algoritma XTS-AES atau LUKS2, analisis offline pada Autopsy akan mengalami jalan buntu (<em>deadlock</em>) kecuali kunci pemulihan disediakan oleh otoritas terkait.</p>
 
-<h2>III. Deep-Dive Metodologi Ekstraksi Artefak Kritis</h2>
+        <div class="academic-note">
+            <strong>Sintesis Teoretis:</strong> Kegagalan dalam mengamankan artefak volatile sebelum mematikan sistem (dead-state transition) dapat dikategorikan sebagai kelalaian prosedur preservasi bukti, karena memusnahkan peluang ekstraksi kunci kriptografi yang aktif pada memori runtime.
+        </div>
 
-<h3>3.1 Ekstraksi Kunci Kriptografi FDE (Full Disk Encryption)</h3>
-<p>Pada saat sistem operasi terenkripsi berjalan, kunci enkripsi volume utama (seperti <em>Full Volume Encryption Key</em> - FVEK pada BitLocker) didekripsikan ke dalam volatile memory agar subsistem kernel dapat melakukan operasi I/O secara transparan. Autopsy tidak memiliki kapabilitas mengekstrak kunci ini dari disk image terenkripsi yang pasif.</p>
+        <h2 id="bab2">II. Metodologi Komparasi Fitur Teknis</h2>
+        <p>Evaluasi komparatif dilakukan secara objektif untuk memetakan kapabilitas operasional dari kedua instrumen forensik berdasarkan beberapa dimensi parameter pertimbangan teknis:</p>
 
-<p>Melalui Volatility 3, investigator dapat mengekstrak teks sandi kriptografi dari dump memori fisik menggunakan subsistem pemrosesan simbolik Windows. Perintah eksekusi formal pada lingkungan Linux (Kali Linux Terminal) didefinisikan sebagai berikut:</p>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Kriteria Evaluasi</th>
+                        <th>Autopsy Forensic Browser (Static Framework)</th>
+                        <th>Volatility 3 Framework (Dynamic Memory Engine)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Keadaan Sistem Target</strong></td>
+                        <td>Pasif / Offline (<em>Dead Forensics</em>)</td>
+                        <td>Aktif / Online (<em>Live Forensics Context</em>)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mekanisme Ingesti Data</strong></td>
+                        <td>E01, RAW/DD, VMDK (Sektor berbasis Disk Image)</td>
+                        <td>Physical Memory Dump (RAW, LiME format, Core Dump)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Dekapsulasi Enkripsi</strong></td>
+                        <td>Bergantung pada input kunci eksternal/Key Escrow</td>
+                        <td>Mampu melakukan parsing struktur pool memori untuk mengekstrak master key</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Deteksi Fileless Threat</strong></td>
+                        <td>Terbatas pada residu persistensi di Registry/MFT</td>
+                        <td>Sangat komprehensif via analisis Virtual Address Descriptor (VAD)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ketergantungan Struktur</strong></td>
+                        <td>Abstraksi File Sistem (MFT, Inode Table)</td>
+                        <td>Symbolic Files (PDB metadata, Linux Banner Kernel Maps)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Integritas Lingkungan</strong></td>
+                        <td>Mutlak (0% modifikasi pada media storage)</td>
+                        <td>Mengubah kondisi RAM sekian persen selama proses akuisisi</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h2 id="bab3">III. Deep-Dive Metodologi Ekstraksi Artefak Kritis</h2>
+
+        <h3>3.1 Ekstraksi Kunci Kriptografi FDE (Full Disk Encryption)</h3>
+        <p>Pada saat sistem operasi terenkripsi berjalan, kunci enkripsi volume utama (seperti <em>Full Volume Encryption Key</em> - FVEK pada BitLocker) didekripsikan ke dalam volatile memory agar subsistem kernel dapat melakukan operasi I/O secara transparan. Autopsy tidak memiliki kapabilitas mengekstrak kunci ini dari disk image terenkripsi yang pasif.</p>
+        <p>Melalui Volatility 3, investigator dapat mengekstrak teks sandi kriptografi dari dump memori fisik menggunakan subsistem pemrosesan simbolik Windows. Perintah eksekusi formal pada lingkungan Linux (Kali Linux Terminal) didefinisikan sebagai berikut:</p>
 
 <pre># Memetakan informasi kernel dan konfigurasi build sistem target
 python3 vol -f /path/to/evidence_mem.dump windows.info
@@ -301,8 +514,8 @@ python3 vol -f /path/to/evidence_mem.dump windows.info
 # Mengekstrak materi kunci BitLocker (FVEK) dari struktur pool memori
 python3 vol -f /path/to/evidence_mem.dump windows.bitlocker.BitLocker</pre>
 
-<h3>3.2 Analisis Struktur Proses dan Deteksi Malicious Code Injection</h3>
-<p>Malware modern kerap menyuntikkan kode berbahaya ke dalam ruang alamat memori proses legal (misalnya <code>svchost.exe</code> atau <code>explorer.exe</code>). Autopsy tidak mampu mendeteksi anomali runtime ini karena tidak ada representasi file fisik pada disk. Volatility 3 melakukan pemindaian terhadap struktur internal kernel, mendeteksi halaman memori yang dikonfigurasi dengan proteksi <code>PAGE_EXECUTE_READWRITE</code> (W^X violation), serta mengurai pohon proses (<em>process tree</em>) menggunakan struktur data <code>_EPROCESS</code>.</p>
+        <h3>3.2 Analisis Struktur Proses dan Deteksi Malicious Code Injection</h3>
+        <p>Malware modern kerap menyuntikkan kode berbahaya ke dalam ruang alamat memori proses legal (misalnya <code>svchost.exe</code> atau <code>explorer.exe</code>). Autopsy tidak mampu mendeteksi anomali runtime ini karena tidak ada representasi file fisik pada disk. Volatility 3 melakukan pemindaian terhadap struktur internal kernel, mendeteksi halaman memori yang dikonfigurasi dengan proteksi <code>PAGE_EXECUTE_READWRITE</code> (W^X violation), serta mengurai pohon proses (<em>process tree</em>) menggunakan struktur data <code>_EPROCESS</code>.</p>
 
 <pre># Mengidentifikasi ketidaksesuaian struktur VAD dan injeksi kode tak terdokumentasi
 python3 vol -f /path/to/evidence_mem.dump windows.malfind
@@ -310,46 +523,49 @@ python3 vol -f /path/to/evidence_mem.dump windows.malfind
 # Melakukan rekonstruksi hierarki proses untuk mendeteksi pemecahan proses (process spawning anomali)
 python3 vol -f /path/to/evidence_mem.dump windows.pstree</pre>
 
-<h3>3.3 Rekonstruksi Soket dan Sesi Jaringan Aktif</h3>
-<p>Guna mengidentifikasi indikator kompromi (IoC) berupa koneksi *Command and Control* (C2), analisis terhadap *network state* yang sedang berjalan sangat krusial. Volatility 3 mengurai objek driver jaringan (seperti <code>tcpip.sys</code>) untuk menampilkan koneksi aktif beserta PID yang bertanggung jawab.</p>
+        <h3>3.3 Rekonstruksi Soket dan Sesi Jaringan Aktif</h3>
+        <p>Guna mengidentifikasi indikator kompromi (IoC) berupa koneksi <em>Command and Control</em> (C2), analisis terhadap <em>network state</em> yang sedang berjalan sangat krusial. Volatility 3 mengurai objek driver jaringan (seperti <code>tcpip.sys</code>) untuk menampilkan koneksi aktif beserta PID yang bertanggung jawab.</p>
 
 <pre># Melakukan pemindaian terhadap endpoint koneksi TCP/UDP yang aktif saat dumping
 python3 vol -f /path/to/evidence_mem.dump windows.netscan</pre>
 
-<h2>IV. Perumusan Standar Hybrid Forensic Workflow</h2>
-<p>Berdasarkan kelemahan eksperimental dari masing-masing instrumen, akurasi investigasi digital forensik yang optimal hanya dapat dicapai melalui penggabungan kedua metode dalam sebuah <em>Hybrid Forensic Workflow</em> yang selaras dengan <strong>ISO/IEC 27037</strong>.</p>
+        <h2 id="bab4">IV. Perumusan Standar Hybrid Forensic Workflow</h2>
+        <p>Berdasarkan kelemahan eksperimental dari masing-masing instrumen, akurasi investigasi digital forensik yang optimal hanya dapat dicapai melalui penggabungan kedua metode dalam sebuah <em>Hybrid Forensic Workflow</em> yang selaras dengan <strong>ISO/IEC 27037</strong>.</p>
 
-<blockquote>
-    "Pendekatan sekuensial yang memprioritaskan akuisisi volatile data sebelum melakukan tindakan interupsi daya pada hardware merupakan prasyarat mutlak dalam menjaga validitas bukti digital secara komprehensif."
-</blockquote>
+        <blockquote>
+            "Pendekatan sekuensial yang memprioritaskan akuisisi volatile data sebelum melakukan tindakan interupsi daya pada hardware merupakan prasyarat mutlak dalam menjaga validitas bukti digital secara komprehensif."
+        </blockquote>
 
-<p>Alur kerja hibrida diimplementasikan melalui tahapan terstruktur berikut:</p>
-<ul>
-    <li><strong>Fase 1: Live Acquisition</strong> — Melakukan dumping memori menggunakan instrumen dengan footprint minimal (misal: LiME untuk Linux atau WinPmem untuk Windows) guna mengamankan RAM state.</li>
-    <li><strong>Fase 2: Volatile Analysis</strong> — Mengeksekusi Volatility 3 untuk memburu <em>cryptographic keys</em> (BitLocker/LUKS) dan mengidentifikasi keberadaan malware residensial memori.</li>
-    <li><strong>Fase 3: Safe Transition</strong> — Mematikan sistem secara teratur atau melakukan pencabutan daya (tergantung pada kebijakan deteksi anti-forensik) dilanjutkan dengan <em>write-blocked static disk imaging</em>.</li>
-    <li><strong>Fase 4: Persistent Analysis</strong> — Menginjeksikan kunci dekripsi yang diperoleh dari Fase 2 ke dalam Autopsy untuk membuka partisi FDE, dilanjutkan dengan pengindeksan linimasa (<em>timeline analysis</em>) dan ekstraksi artefak persisten.</li>
-</ul>
+        <p>Alur kerja hibrida diimplementasikan melalui tahapan terstruktur berikut:</p>
+        <ul>
+            <li><strong>Fase 1: Live Acquisition</strong> — Melakukan dumping memori menggunakan instrumen dengan footprint minimal (misal: LiME untuk Linux atau WinPmem untuk Windows) guna mengamankan RAM state.</li>
+            <li><strong>Fase 2: Volatile Analysis</strong> — Mengeksekusi Volatility 3 untuk memburu <em>cryptographic keys</em> (BitLocker/LUKS) dan mengidentifikasi keberadaan malware residensial memori.</li>
+            <li><strong>Fase 3: Safe Transition</strong> — Mematikan sistem secara teratur atau melakukan pencabutan daya (tergantung pada kebijakan deteksi anti-forensik) dilanjutkan dengan <em>write-blocked static disk imaging</em>.</li>
+            <li><strong>Fase 4: Persistent Analysis</strong> — Menginjeksikan kunci dekripsi yang diperoleh dari Fase 2 ke dalam Autopsy untuk membuka partisi FDE, dilanjutkan dengan pengindeksan linimasa (<em>timeline analysis</em>) dan ekstraksi artefak persisten.</li>
+        </ul>
 
-<h2>V. Validasi Integritas & Rantai Jaga (Chain of Custody)</h2>
-<p>Sesuai dengan ketentuan regulasi hukum penanganan bukti elektronik di Indonesia, salah satunya <strong>UU ITE No. 11 Tahun 2008 Pasal 5</strong> serta panduan teknis **Perkapolri No. 10 Tahun 2019**, setiap tahapan transformasi digital wajib divalidasi menggunakan fungsi hash kriptografis guna menjamin aspek *data integrity*.</p>
+        <h2 id="bab5">V. Validasi Integritas & Rantai Jaga (Chain of Custody)</h2>
+        <p>Sesuai dengan ketentuan regulasi hukum penanganan bukti elektronik di Indonesia, salah satunya <strong>UU ITE No. 11 Tahun 2008 Pasal 5</strong> serta panduan teknis <strong>Perkapolri No. 10 Tahun 2019</strong>, setiap tahapan transformasi digital wajib divalidasi menggunakan fungsi hash kriptografis guna menjamin aspek <em>data integrity</em>.</p>
 
 <pre># Eksekusi kalkulasi hash SHA-256 untuk pemeliharaan Rantai Jaga (Chain of Custody)
 sha256sum /storage/forensics/evidence_mem.dump > memory_integrity.sha256
 sha256sum /storage/forensics/evidence_disk.img > disk_integrity.sha256</pre>
 
-<h2>VI. Kesimpulan</h2>
-<p>Volatility 3 dan Autopsy tidak berada dalam paradigma kompetitif, melainkan merupakan dua instrumen komplementer dalam ekosistem *Digital Forensics and Incident Response* (DFIR). Analisis forensik statis melalui Autopsy memberikan ketahanan bukti empiris untuk data yang bersifat persisten, namun tidak berdaya dalam menghadapi FDE moderen dan eksploitasi fileless. Integrasi keduanya dalam *Hybrid Forensic Workflow* menjamin efisiensi analisis, akurasi temuan hambatan enkripsi, serta kepatuhan penuh terhadap standar regulasi penegakan hukum digital.</p>
+        <h2 id="bab6">VI. Kesimpulan</h2>
+        <p>Volatility 3 dan Autopsy tidak berada dalam paradigma kompetitif, melainkan merupakan dua instrumen komplementer dalam ekosistem <em>Digital Forensics and Incident Response</em> (DFIR). Analisis forensik statis melalui Autopsy memberikan ketahanan bukti empiris untuk data yang bersifat persisten, namun tidak berdaya dalam menghadapi FDE moderen dan eksploitasi fileless. Integrasi keduanya dalam <em>Hybrid Forensic Workflow</em> menjamin efisiensi analisis, akurasi temuan hambatan enkripsi, serta kepatuhan penuh terhadap standar regulasi penegakan hukum digital.</p>
 
-<hr style="border: 0; border-top: 2px solid #2c3e50; margin: 30px 0;">
+        <hr style="border: 0; border-top: 2px solid var(--secondary-color); margin: 40px 0;">
 
-<h2>Referensi & Pustaka Akademik</h2>
-<ul>
-    <li>Carrier, B. (2005). <em>File System Forensic Analysis</em>. Addison-Wesley Professional.</li>
-    <li>Ligh, M. H., Case, A., Levy, J., & Walters, A. (2014). <em>The Art of Memory Forensics: Detecting Malware and Threats in Windows, Linux, and Mac Memory</em>. John Wiley & Sons.</li>
-    <li>International Organization for Standardization. (2012). <em>Information technology — Security techniques — Guidelines for identification, collection, acquisition, and preservation of digital evidence</em> (ISO/IEC Standard No. 27037:2012).</li>
-    <li>Internet Engineering Task Force. (2002). <em>Guidelines for Evidence Collection and Archiving</em> (RFC 3227).</li>
-</ul>
+        <h3>Referensi & Pustaka Akademik</h3>
+        <ul style="list-style: none; padding-left: 0;">
+            <li style="margin-bottom: 10px; text-indent: -20px; padding-left: 20px;">Carrier, B. (2005). <em>File System Forensic Analysis</em>. Addison-Wesley Professional.</li>
+            <li style="margin-bottom: 10px; text-indent: -20px; padding-left: 20px;">Ligh, M. H., Case, A., Levy, J., & Walters, A. (2014). <em>The Art of Memory Forensics: Detecting Malware and Threats in Windows, Linux, and Mac Memory</em>. John Wiley & Sons.</li>
+            <li style="margin-bottom: 10px; text-indent: -20px; padding-left: 20px;">International Organization for Standardization. (2012). <em>Information technology — Security techniques — Guidelines for identification, collection, acquisition, and preservation of digital evidence</em> (ISO/IEC Standard No. 27037:2012).</li>
+            <li style="margin-bottom: 10px; text-indent: -20px; padding-left: 20px;">Internet Engineering Task Force. (2002). <em>Guidelines for Evidence Collection and Archiving</em> (RFC 3227).</li>
+        </ul>
+
+    </main>
+</div>
 
 </body>
 </html>
