@@ -402,8 +402,7 @@
                 Perkembangan sistem enkripsi tingkat lanjut dan malware volatile menimbulkan tantangan kritis dalam investigasi forensik digital. Penelitian ini menyajikan analisis komparatif antara Volatility 3 (live memory forensics) dan Autopsy (static disk forensics) dalam kerangka Digital Forensics and Incident Response (DFIR). Berdasarkan panduan hierarki volatilitas RFC 3227, makalah ini mengevaluasi kapabilitas kedua instrumen dalam mengekstrak artefak runtime state yang sangat volatile dan kunci enkripsi mutakhir, termasuk BitLocker XTS-AES dan LUKS2. Hasil analisis menunjukkan bahwa forensik statis melalui Autopsy menjamin preservasi data non-volatile namun memiliki keterbatasan mutlak tanpa adanya kunci kriptografi pradesain. Sebaliknya, Volatility 3 mampu menembus batasan tersebut dengan mengekstrak kunci master kriptografi serta mendeteksi fileless code injection langsung dari struktur memori volatile. Sebagai kontribusi praktis, makalah ini merumuskan Alur Kerja Forensik Hibrida (Hybrid Forensic Workflow) yang terstandarisasi guna mengoptimalkan fase identifikasi, akuisisi, dan preservasi sesuai ISO/IEC 27037.
             </div>
             <div class="keywords"><strong>Kata Kunci:</strong> Forensik Digital, Volatility 3, Autopsy, Memori Volatile, Ekstraksi Kunci Enkripsi, DFIR.</div>
-        </div>
-<style>
+       <style>
 
     .hero-image {
     display: block;
@@ -415,6 +414,9 @@
 }
 </style>
         <img src="IMAGE1.png" alt="Gambar" class="hero-image">
+        
+        </div>
+
         <h2 id="bab1">I. Pendahuluan & Landasan Teoretis</h2>
 
         <h3>1.1 Hierarki Volatilitas Data Berdasarkan RFC 3227</h3>
